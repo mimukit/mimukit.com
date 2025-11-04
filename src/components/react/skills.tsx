@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { LucideAppWindow } from 'lucide-react';
+import React, { useEffect } from 'react';
 import { type IconType } from 'react-icons';
 import { BsCursor } from 'react-icons/bs';
 import { FaQuestionCircle } from 'react-icons/fa';
@@ -9,7 +10,6 @@ import {
   SiCloudflare,
   SiCss3,
   SiDigitalocean,
-  SiDiscord,
   SiGit,
   SiGithub,
   SiGoogle,
@@ -27,7 +27,6 @@ import {
   SiPerplexity,
   SiPostgresql,
   SiSlack,
-  SiSpotify,
   SiTailwindcss,
   SiTypescript,
   SiUbuntu,
@@ -37,7 +36,6 @@ import {
 import { TbBrandNextjs, TbBrandVisualStudio } from 'react-icons/tb';
 import { technologies, type Category, type Technologies } from '../../consts';
 import { InfiniteScroll } from '../ui/infinite-scroll';
-import { LucideAppWindow } from 'lucide-react';
 
 const iconMap: { [key: string]: IconType } = {
   'mdi:language-html5': SiHtml5,
