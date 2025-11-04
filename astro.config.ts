@@ -98,6 +98,21 @@ export default defineConfig({
         '@radix-ui/react-slot',
       ],
     },
+    ssr: {
+      external: ['@resvg/resvg-js', 'fs', 'path'],
+      noExternal: [],
+    },
+    build: {
+      rollupOptions: {
+        external: (id) => {
+          // Exclude native modules and @resvg packages from bundling
+          if (id.includes('@resvg/resvg-js') || id.includes('.node')) {
+            return true;
+          }
+          return false;
+        },
+      },
+    },
   },
 
   server: {
@@ -135,5 +150,16 @@ export default defineConfig({
     remarkPlugins: [remarkMath, remarkEmoji, remarkSectionize],
   },
 
-  adapter: cloudflare()
+  image: {
+    service: {
+      entrypoint: 'astro/assets/services/sharp',
+      config: {
+        limitInputPixels: false,
+      },
+    },
+  },
+
+  adapter: cloudflare({
+    imageService: 'compile',
+  }),
 });
