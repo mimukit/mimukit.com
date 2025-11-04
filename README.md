@@ -5,6 +5,8 @@
 ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 
+![preview](https://raw.githubusercontent.com/mimukit/mimukit.com/refs/heads/main/src/assets/projects/modern-portfolio.png 'Preview')
+
 This is my personal website and blog. I will be using this to share my thoughts, experiences, and learnings.
 
 ## Tech Stack
