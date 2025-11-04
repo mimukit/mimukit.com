@@ -18,6 +18,8 @@ import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers';
 
 import tailwindcss from '@tailwindcss/vite';
 
+import cloudflare from '@astrojs/cloudflare';
+
 function rehypeDemoteH1AndStripTitle() {
   return (tree: any) => {
     const walk = (
@@ -132,4 +134,6 @@ export default defineConfig({
     ],
     remarkPlugins: [remarkMath, remarkEmoji, remarkSectionize],
   },
+
+  adapter: cloudflare()
 });
