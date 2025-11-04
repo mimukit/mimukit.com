@@ -1,0 +1,48 @@
+---
+import Link from '@/components/Link.astro';
+import { buttonVariants } from '@/components/ui/button';
+import { ICON_MAP } from '@/consts';
+import { cn } from '@/lib/utils';
+import type { SocialLink } from '@/types';
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  links: SocialLink[];
+}
+
+const { links } = Astro.props;
+---
+
+<ul
+  class="mb-4 flex w-full flex-wrap justify-around gap-2 md:mb-0 md:w-auto md:justify-center"
+  role="list"
+  aria-label="social links"
+>
+  {
+    links.map(({ href, label }) => (
+      <li aria-label={label} role="listitem">
+        <Link
+          href={href}
+          aria-label={label}
+          title={label}
+          class={buttonVariants({ variant: 'ghost', size: 'icon' })}
+          class={cn(
+            buttonVariants({ variant: 'ghost', size: 'icon' }),
+            'group size-14 text-2xl lg:size-9 lg:text-base',
+          )}
+          target="_blank"
+          rel="noopener noreferrer"
+          external
+        >
+          <Icon
+            name={
+              ICON_MAP[label as keyof typeof ICON_MAP] ||
+              'lucide:message-circle-question'
+            }
+            class="size-4"
+          />
+        </Link>
+      </li>
+    ))
+  }
+</ul>

@@ -1,0 +1,108 @@
+---
+import { SITE } from '@/consts';
+import { getAllPosts } from '@/lib/data-utils';
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = SITE.title, description = SITE.description } = Astro.props;
+const image = new URL('/ogImage.png', Astro.site).toString();
+const posts = await getAllPosts();
+
+// Optimize description for SEO (50-155 chars)
+const descTrimmed = description.trim();
+const optimizedDescription =
+  descTrimmed.length > 155 ? descTrimmed.slice(0, 152) + '...' : descTrimmed;
+
+// Create proper page title, clamp to ~60 chars
+const rawTitle = title === SITE.title ? SITE.title : `${title} | ${SITE.title}`;
+const pageTitle =
+  rawTitle.length > 60 ? rawTitle.slice(0, 57) + '...' : rawTitle;
+---
+
+<title>{pageTitle}</title>
+<meta name="description" content={optimizedDescription} />
+<!-- robots set globally in base head to avoid duplicates -->
+<meta name="language" content={SITE.locale} />
+<link rel="canonical" href={Astro.url} />
+
+<!-- Open Graph Meta Tags -->
+<meta property="og:title" content={title} />
+<meta property="og:description" content={optimizedDescription} />
+<meta property="og:image" content={image} />
+<meta property="og:image:alt" content={title} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:type" content="website" />
+<meta property="og:locale" content={SITE.locale} />
+<meta property="og:site_name" content={SITE.title} />
+<meta property="og:url" content={Astro.url} />
+
+<!-- Twitter Card Meta Tags -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={optimizedDescription} />
+<meta name="twitter:image" content={image} />
+<meta name="twitter:image:alt" content={title} />
+<meta
+  name="twitter:creator"
+  content={`@${SITE.author.replace(' ', '').toLowerCase()}`}
+/>
+<meta
+  name="twitter:site"
+  content={`@${SITE.author.replace(' ', '').toLowerCase()}`}
+/>
+<meta name="twitter:domain" content={new URL(SITE.href).hostname} />
+
+<!-- Enhanced JSON-LD Structured Data -->
+<script
+  type="application/ld+json"
+  is:inline
+  set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${SITE.href}#website`,
+    url: SITE.href,
+    name: SITE.title,
+    description: optimizedDescription,
+    inLanguage: SITE.locale,
+    publisher: {
+      '@type': 'Person',
+      name: SITE.author,
+      url: SITE.href,
+    },
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${SITE.href}/blog?q={search_term_string}`,
+      },
+      'query-input': 'required name=search_term_string',
+    },
+    mainEntity: {
+      '@type': 'Blog',
+      '@id': `${SITE.href}/blog#blog`,
+      name: `${SITE.title} Blog`,
+      description:
+        'Technology blog covering web development, programming, and software engineering topics',
+      url: `${SITE.href}/blog`,
+      author: {
+        '@type': 'Person',
+        name: SITE.author,
+      },
+      blogPost: posts.slice(0, 10).map((post) => ({
+        '@type': 'BlogPosting',
+        headline: post.data.title,
+        description: post.data.description,
+        url: `${SITE.href}/blog/${post.id}/`,
+        datePublished: post.data.date.toISOString(),
+        author: {
+          '@type': 'Person',
+          name: post.data.authors ? post.data.authors[0] : SITE.author,
+        },
+        keywords: post.data.tags ? post.data.tags.join(', ') : '',
+      })),
+    },
+  })}
+/>
