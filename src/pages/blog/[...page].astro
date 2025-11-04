@@ -1,0 +1,70 @@
+---
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import PageHead from '@/components/PageHead.astro';
+import Search from '@/components/react/search';
+import PaginationComponent from '@/components/ui/pagination';
+import Layout from '@/layouts/Layout.astro';
+import { getAllPosts } from '@/lib/data-utils';
+import type { PaginateFunction } from 'astro';
+import { Icon } from 'astro-icon/components';
+
+export async function getStaticPaths({
+  paginate,
+}: {
+  paginate: PaginateFunction;
+}) {
+  const allPosts = await getAllPosts();
+  return paginate(allPosts, { pageSize: 5 });
+}
+
+const { page } = Astro.props;
+const searchList = await getAllPosts();
+const currentUrl = Astro.url;
+---
+
+<Layout canonicalUrl={currentUrl}>
+  <PageHead slot="head" title="Blog" />
+
+  <Breadcrumbs
+    items={[
+      { label: 'Blog', href: '/blog', icon: 'lucide:archive' },
+      { label: `Page ${page.currentPage}`, icon: 'lucide:folder-open' },
+    ]}
+  />
+  <section class="max-screen mt-12 px-4 md:px-6">
+    <div class="text-primary flex w-fit items-center gap-2">
+      <Icon
+        class="text-secondary-foreground h-4 w-4 animate-pulse"
+        name="lucide:brain"
+      />
+      <p
+        class="shimmer word-spacing text-secondary-foreground font-mono text-sm leading-none uppercase"
+      >
+        Quick Thoughts
+      </p>
+    </div>
+    <h2
+      id="skills-title"
+      class="font-custom text-foreground mt-2 text-4xl font-bold"
+    >
+      Blog
+    </h2>
+    <p class="text-muted-foreground text-md mt-3 max-w-2xl">
+      Welcome to my blog! Here, I share AI generated content, tutorials, and
+      insights on various topics. I hope you find the information helpful and
+      engaging. If you have any questions or suggestions, feel free to reach
+      out!
+    </p>
+
+    <div class="my-12 flex min-h-[calc(100vh-18rem)] flex-col gap-y-8">
+      <Search client:load searchList={searchList} initialPosts={page.data} />
+    </div>
+
+    <PaginationComponent
+      currentPage={page.currentPage}
+      totalPages={page.lastPage}
+      baseUrl="/blog/"
+      client:load
+    />
+  </section>
+</Layout>
