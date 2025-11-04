@@ -1,0 +1,127 @@
+---
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import PageHead from '@/components/PageHead.astro';
+import PaginationComponent from '@/components/ui/pagination';
+import Layout from '@/layouts/Layout.astro';
+import { getAllProjects } from '@/lib/data-utils';
+import type { PaginateFunction } from 'astro';
+import { Icon } from 'astro-icon/components';
+import { Image } from 'astro:assets';
+
+export async function getStaticPaths({
+  paginate,
+}: {
+  paginate: PaginateFunction;
+}) {
+  const allProjects = await getAllProjects();
+  return paginate(allProjects, { pageSize: 6 });
+}
+
+const { page } = Astro.props;
+const projectData = await getAllProjects();
+const currentUrl = Astro.url;
+---
+
+<Layout canonicalUrl={currentUrl}>
+  <PageHead slot="head" title="Projects" />
+  <Breadcrumbs
+    items={[{ label: 'Projects', href: '/projects', icon: 'lucide:folder' }]}
+  />
+
+  <section class="max-screen mt-12 px-4 md:px-6">
+    <div class="mb-8 flex flex-row items-center justify-between">
+      <div>
+        <div class="text-primary flex w-fit items-center gap-2">
+          <Icon
+            name="lucide:star"
+            class="h-4 w-4 animate-pulse text-yellow-500"
+          />
+          <p
+            class="shimmer word-spacing text-primary font-mono text-sm leading-none uppercase"
+          >
+            My Works
+          </p>
+        </div>
+        <h2
+          id="skills-title"
+          class="font-custom text-foreground mt-2 text-4xl font-bold"
+        >
+          Projects
+        </h2>
+        <p class="text-muted-foreground text-md mt-3 max-w-2xl">
+          Here are some of the projects I have worked on. I am always looking
+          for new challenges and opportunities to learn and grow as a developer.
+          If you have a project in mind, feel free to reach out!
+        </p>
+      </div>
+    </div>
+
+    <div
+      class="py-sm mt-12 mb-16 grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-2"
+    >
+      {
+        projectData.map((project, _) => (
+          <div class="group h-full w-full transition-all duration-300 hover:translate-y-[-4px] even:sm:mt-14">
+            <a
+              class="bg-card border-card-foreground/10 flex h-full w-full flex-col overflow-hidden rounded-2xl border transition-all duration-300 hover:shadow-lg"
+              href={`/projects/${project.id}`}
+              aria-label="Project link"
+            >
+              <div class="aspect-16/10 w-full overflow-hidden">
+                <Image
+                  alt={project.data.name}
+                  src={project.data.image}
+                  class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  loading="lazy"
+                  fetchpriority="low"
+                  width={600}
+                  height={375}
+                />
+              </div>
+              <div class="flex grow flex-col justify-between p-5">
+                <div>
+                  <h3 class="text-foreground mb-2 text-xl font-medium">
+                    {project.data.name}
+                  </h3>
+                  <p class="text-muted-foreground mb-4 line-clamp-2 text-sm">
+                    {project.data.description ||
+                      'An innovative project showcasing creativity and technical skills'}
+                  </p>
+                </div>
+                <div class="border-border/40 mt-auto flex flex-wrap items-center justify-between border-t pt-3">
+                  <div class="flex flex-wrap gap-2">
+                    {project.data.tags?.slice(0, 2).map((tag) => (
+                      <span class="bg-primary/10 text-primary rounded-full px-2 py-1 text-xs font-medium">
+                        {tag}
+                      </span>
+                    ))}
+                    {project.data.tags?.length > 2 && (
+                      <span class="bg-secondary/80 text-primary rounded-full px-2 py-1 text-xs font-medium">
+                        +{project.data.tags.length - 2}
+                      </span>
+                    )}
+                  </div>
+                  <p class="text-muted-foreground flex items-center text-xs font-medium">
+                    <Icon name="lucide:calendar" class="mr-1 h-3 w-3" />
+                    {project.data.endDate
+                      ? new Date(project.data.endDate).getFullYear()
+                      : 'Ongoing'}
+                  </p>
+                </div>
+              </div>
+            </a>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="mt-16 mb-16">
+      <PaginationComponent
+        currentPage={page.currentPage}
+        totalPages={page.lastPage}
+        baseUrl="/projects/"
+        client:load
+      />
+    </div>
+  </section>
+</Layout>
