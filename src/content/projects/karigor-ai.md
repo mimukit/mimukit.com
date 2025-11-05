@@ -20,6 +20,7 @@ tags:
 image: '../../assets/projects/karigor-ai.png'
 link: 'https://karigorai.com'
 startDate: '2025-05-23'
+rank: 3
 ---
 
 # Karigor AI

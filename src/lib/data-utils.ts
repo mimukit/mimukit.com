@@ -108,10 +108,7 @@ export async function getPostsByTag(
 
 export async function getAllProjects(): Promise<CollectionEntry<'projects'>[]> {
   const projects = await getCollection('projects');
-  return projects.sort(
-    (a, b) =>
-      (b.data.startDate?.valueOf() ?? 0) - (a.data.startDate?.valueOf() ?? 0),
-  );
+  return projects.sort((a, b) => (a.data.rank ?? 0) - (b.data.rank ?? 0));
 }
 
 export async function getProjectsFeaturedTags(

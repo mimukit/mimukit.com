@@ -5,6 +5,7 @@ tags: ['astro', 'tailwindcss', 'typescript', 'react']
 image: '../../assets/projects/modern-portfolio.png'
 link: 'https://mimukit.com'
 startDate: '2025-11-04'
+rank: 4
 ---
 
 # Personal Portfolio & Blog
