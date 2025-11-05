@@ -63,15 +63,15 @@ const currentUrl = Astro.url;
         projectData.map((project, _) => (
           <div class="group h-full w-full transition-all duration-300 hover:translate-y-[-4px] even:sm:mt-14">
             <a
-              class="bg-card border-card-foreground/10 flex h-full w-full flex-col overflow-hidden rounded-2xl border transition-all duration-300 hover:shadow-lg"
+              class="bg-card border-card-foreground/10 flex h-full w-full flex-col overflow-hidden rounded-xl border transition-all duration-300 hover:shadow-lg"
               href={`/projects/${project.id}`}
               aria-label="Project link"
             >
-              <div class="aspect-16/10 w-full overflow-hidden">
+              <div class="aspect-16/9 w-full overflow-hidden">
                 <Image
                   alt={project.data.name}
                   src={project.data.image}
-                  class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  class="w-full h-full object-fill transition-transform duration-500 group-hover:scale-105"
                   loading="lazy"
                   fetchpriority="low"
                   width={600}
