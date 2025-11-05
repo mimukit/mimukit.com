@@ -6,7 +6,8 @@ tags:
 image: '../../assets/projects/borno-ai.png'
 link: 'https://bornoai.com'
 startDate: '2025-04-24'
-rank: 1
+endDate: '2025-05-03'
+rank: 3
 ---
 
 # Borno AI
