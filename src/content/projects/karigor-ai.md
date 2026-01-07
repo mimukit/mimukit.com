@@ -21,6 +21,7 @@ image: '../../assets/projects/karigor-ai.png'
 link: 'https://karigorai.com'
 startDate: '2025-05-23'
 rank: 1
+badge: 'popular'
 ---
 
 # Karigor AI

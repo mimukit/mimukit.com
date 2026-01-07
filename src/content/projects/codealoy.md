@@ -19,6 +19,7 @@ image: '../../assets/projects/codealoy.png'
 link: 'https://www.codealoy.com'
 startDate: '2020-05-06'
 rank: 2
+badge: 'featured'
 ---
 
 # Codealoy

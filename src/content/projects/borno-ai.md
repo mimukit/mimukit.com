@@ -8,6 +8,7 @@ link: 'https://bornoai.com'
 startDate: '2025-04-24'
 endDate: '2025-05-03'
 rank: 3
+badge: 'new'
 ---
 
 # Borno AI

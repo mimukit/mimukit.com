@@ -6,6 +6,7 @@ image: '../../assets/projects/modern-portfolio.png'
 link: 'https://mimukit.com'
 startDate: '2025-11-04'
 rank: 4
+badge: 'new'
 ---
 
 # Personal Portfolio & Blog
