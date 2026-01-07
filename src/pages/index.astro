@@ -18,12 +18,8 @@ const currentUrl = Astro.url;
 <Layout canonicalUrl={currentUrl}>
   <PageHead slot="head" title="Senior Software Engineer" />
   <Hero />
-
-  <SkillsSection />
-
   <CareerSection career={recentCareer} />
-
   <ProjectsSection projects={projects} />
-
   <LatestPostsSection posts={blog} />
+  <SkillsSection />
 </Layout>
