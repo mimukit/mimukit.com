@@ -16,3 +16,18 @@ export type SocialLink = {
 export type IconMap = {
   [key: string]: string;
 };
+
+export type CareerPosition = {
+  id: string;
+  title: string;
+  company: string;
+  companyUrl?: string;
+  location: string;
+  startDate: string;
+  endDate?: string;
+  description: string;
+  subPositions?: Omit<
+    CareerPosition,
+    'subPositions' | 'company' | 'companyUrl' | 'location'
+  >[];
+};

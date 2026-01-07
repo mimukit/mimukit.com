@@ -1,0 +1,98 @@
+---
+import type { CareerPosition } from '@/types';
+
+interface Props {
+  position: CareerPosition;
+  isSubPosition?: boolean;
+}
+
+const { position, isSubPosition = false } = Astro.props;
+
+function formatDateRange(start: string, end?: string): string {
+  const endText = end || 'Present';
+  return `${start} — ${endText}`;
+}
+---
+
+<article
+  class:list={[
+    'relative transition-all duration-300',
+    !isSubPosition &&
+      'bg-card border-card-foreground/10 rounded-xl border p-6 hover:shadow-lg hover:translate-y-[-2px]',
+    isSubPosition && 'border-border mt-4 ml-4 border-l-2 pl-6',
+  ]}
+>
+  <div class="flex flex-col gap-y-2">
+    {/* Header row: Location and Date */}
+    <div class="flex items-start justify-between gap-4">
+      {
+        !isSubPosition && (
+          <span class="text-muted-foreground text-sm">{position.location}</span>
+        )
+      }
+      {
+        isSubPosition && (
+          <span class="text-muted-foreground text-sm">{position.location}</span>
+        )
+      }
+      <span class="text-muted-foreground shrink-0 text-sm">
+        {formatDateRange(position.startDate, position.endDate)}
+      </span>
+    </div>
+
+    {/* Title and Company */}
+    <div class="flex flex-wrap items-baseline gap-x-2">
+      <h3
+        class:list={[
+          'text-foreground font-semibold',
+          isSubPosition ? 'text-lg' : 'text-xl',
+        ]}
+      >
+        {position.title}
+      </h3>
+      {
+        !isSubPosition && position.company && (
+          <>
+            <span class="text-muted-foreground">at</span>
+            {position.companyUrl ? (
+              <a
+                href={position.companyUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-primary font-semibold hover:underline"
+              >
+                {position.company}
+              </a>
+            ) : (
+              <span class="text-primary font-semibold">{position.company}</span>
+            )}
+          </>
+        )
+      }
+    </div>
+
+    {/* Description */}
+    <p class="text-muted-foreground mt-1 text-sm leading-relaxed">
+      {position.description}
+    </p>
+
+    {/* Sub-positions (nested roles) */}
+    {
+      position.subPositions && position.subPositions.length > 0 && (
+        <div class="mt-2">
+          {position.subPositions.map((subPos) => (
+            <Astro.self
+              position={{
+                ...subPos,
+                company: position.company,
+                companyUrl: position.companyUrl,
+                location: position.location,
+              }}
+              isSubPosition={true}
+            />
+          ))}
+        </div>
+      )
+    }
+  </div>
+</article>
