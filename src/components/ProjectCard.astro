@@ -1,0 +1,74 @@
+---
+import { Icon } from 'astro-icon/components';
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+---
+
+<div
+  class="group h-full w-full transition-all duration-300 hover:translate-y-[-4px]"
+>
+  <a
+    class="bg-card border-card-foreground/10 flex h-full w-full flex-col overflow-hidden rounded-xl border transition-all duration-300 hover:shadow-lg"
+    href={`/projects/${project.id}`}
+    aria-label={`View ${project.data.name} project`}
+  >
+    <div class="aspect-16/9 w-full overflow-hidden">
+      <Image
+        alt={project.data.name}
+        src={project.data.image}
+        class="h-full w-full object-fill transition-transform duration-500 group-hover:scale-105"
+        loading="lazy"
+        fetchpriority="low"
+        width={600}
+        height={375}
+      />
+    </div>
+    <div class="flex grow flex-col justify-between p-5">
+      <div>
+        <h3 class="text-foreground mb-2 text-xl font-medium">
+          {project.data.name}
+        </h3>
+        <p class="text-muted-foreground mb-4 line-clamp-2 text-sm">
+          {
+            project.data.description ||
+              'An innovative project showcasing creativity and technical skills'
+          }
+        </p>
+      </div>
+      <div
+        class="border-border/40 mt-auto flex flex-wrap items-center justify-between border-t pt-3"
+      >
+        <div class="flex flex-wrap gap-2">
+          {
+            project.data.tags?.slice(0, 2).map((tag) => (
+              <span class="bg-primary/10 text-primary rounded-full px-2 py-1 text-xs font-medium">
+                {tag}
+              </span>
+            ))
+          }
+          {
+            project.data.tags?.length > 2 && (
+              <span class="bg-secondary/80 text-primary rounded-full px-2 py-1 text-xs font-medium">
+                +{project.data.tags.length - 2}
+              </span>
+            )
+          }
+        </div>
+        <p class="text-muted-foreground flex items-center text-xs font-medium">
+          <Icon name="lucide:calendar" class="mr-1 h-3 w-3" />
+          {
+            project.data.endDate
+              ? new Date(project.data.endDate).getFullYear()
+              : 'Ongoing'
+          }
+        </p>
+      </div>
+    </div>
+  </a>
+</div>

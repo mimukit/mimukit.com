@@ -1,12 +1,12 @@
 ---
 import Breadcrumbs from '@/components/Breadcrumbs.astro';
 import PageHead from '@/components/PageHead.astro';
+import ProjectCard from '@/components/ProjectCard.astro';
 import PaginationComponent from '@/components/ui/pagination';
 import Layout from '@/layouts/Layout.astro';
 import { getAllProjects } from '@/lib/data-utils';
 import type { PaginateFunction } from 'astro';
 import { Icon } from 'astro-icon/components';
-import { Image } from 'astro:assets';
 
 export async function getStaticPaths({
   paginate,
@@ -60,56 +60,9 @@ const currentUrl = Astro.url;
       class="py-sm mt-12 mb-16 grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-2"
     >
       {
-        projectData.map((project, _) => (
-          <div class="group h-full w-full transition-all duration-300 hover:translate-y-[-4px] even:sm:mt-14">
-            <a
-              class="bg-card border-card-foreground/10 flex h-full w-full flex-col overflow-hidden rounded-xl border transition-all duration-300 hover:shadow-lg"
-              href={`/projects/${project.id}`}
-              aria-label="Project link"
-            >
-              <div class="aspect-16/9 w-full overflow-hidden">
-                <Image
-                  alt={project.data.name}
-                  src={project.data.image}
-                  class="w-full h-full object-fill transition-transform duration-500 group-hover:scale-105"
-                  loading="lazy"
-                  fetchpriority="low"
-                  width={600}
-                  height={375}
-                />
-              </div>
-              <div class="flex grow flex-col justify-between p-5">
-                <div>
-                  <h3 class="text-foreground mb-2 text-xl font-medium">
-                    {project.data.name}
-                  </h3>
-                  <p class="text-muted-foreground mb-4 line-clamp-2 text-sm">
-                    {project.data.description ||
-                      'An innovative project showcasing creativity and technical skills'}
-                  </p>
-                </div>
-                <div class="border-border/40 mt-auto flex flex-wrap items-center justify-between border-t pt-3">
-                  <div class="flex flex-wrap gap-2">
-                    {project.data.tags?.slice(0, 2).map((tag) => (
-                      <span class="bg-primary/10 text-primary rounded-full px-2 py-1 text-xs font-medium">
-                        {tag}
-                      </span>
-                    ))}
-                    {project.data.tags?.length > 2 && (
-                      <span class="bg-secondary/80 text-primary rounded-full px-2 py-1 text-xs font-medium">
-                        +{project.data.tags.length - 2}
-                      </span>
-                    )}
-                  </div>
-                  <p class="text-muted-foreground flex items-center text-xs font-medium">
-                    <Icon name="lucide:calendar" class="mr-1 h-3 w-3" />
-                    {project.data.endDate
-                      ? new Date(project.data.endDate).getFullYear()
-                      : 'Ongoing'}
-                  </p>
-                </div>
-              </div>
-            </a>
+        projectData.map((project) => (
+          <div class="even:sm:mt-14">
+            <ProjectCard project={project} />
           </div>
         ))
       }

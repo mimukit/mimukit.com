@@ -111,6 +111,13 @@ export async function getAllProjects(): Promise<CollectionEntry<'projects'>[]> {
   return projects.sort((a, b) => (a.data.rank ?? 0) - (b.data.rank ?? 0));
 }
 
+export async function getTopProjects(
+  count: number,
+): Promise<CollectionEntry<'projects'>[]> {
+  const projects = await getAllProjects();
+  return projects.slice(0, count);
+}
+
 export async function getProjectsFeaturedTags(
   maxCount: number,
 ): Promise<string[]> {
