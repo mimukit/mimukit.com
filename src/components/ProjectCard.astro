@@ -18,7 +18,7 @@ const { project } = Astro.props;
     href={`/projects/${project.id}`}
     aria-label={`View ${project.data.name} project`}
   >
-    <div class="aspect-16/9 w-full overflow-hidden">
+    <div class="relative aspect-16/9 w-full overflow-hidden">
       <Image
         alt={project.data.name}
         src={project.data.image}
@@ -28,6 +28,23 @@ const { project } = Astro.props;
         width={600}
         height={375}
       />
+      {
+        project.data.badge && (
+          <span
+            class:list={[
+              'absolute top-2 right-2 rounded-full px-2 py-0.5 text-xs font-medium capitalize',
+              {
+                'bg-emerald-500/90 text-white': project.data.badge === 'new',
+                'bg-amber-500/90 text-white': project.data.badge === 'popular',
+                'bg-blue-500/90 text-white': project.data.badge === 'featured',
+                'bg-gray-500/90 text-white': project.data.badge === 'archived',
+              },
+            ]}
+          >
+            {project.data.badge}
+          </span>
+        )
+      }
     </div>
     <div class="flex grow flex-col justify-between p-5">
       <div>

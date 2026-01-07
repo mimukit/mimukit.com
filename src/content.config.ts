@@ -27,6 +27,7 @@ const projects = defineCollection({
       startDate: z.coerce.date().optional(),
       endDate: z.coerce.date().optional(),
       rank: z.number(),
+      badge: z.enum(['new', 'popular', 'featured', 'archived']).optional(),
     }),
 });
 
