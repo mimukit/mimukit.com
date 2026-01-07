@@ -1,0 +1,46 @@
+---
+import CareerCard from '@/components/CareerCard.astro';
+import Link from '@/components/Link.astro';
+import { buttonVariants } from '@/components/ui/button';
+import type { CAREER_DATA } from '@/data/career';
+
+interface Props {
+  career: typeof CAREER_DATA;
+}
+
+const { career } = Astro.props;
+---
+
+<section
+  class="flex flex-col gap-y-4 px-4 sm:px-8 lg:px-16"
+  aria-labelledby="career-title"
+  role="region"
+>
+  <div class="relative" aria-labelledby="career-title">
+    <h2
+      id="career-title"
+      class="font-custom text-foreground text-2xl font-bold"
+      title="career"
+      aria-label="career"
+    >
+      Career
+    </h2>
+    <p class="text-muted-foreground text-sm" aria-label="career description">
+      A glimpse of my professional journey. Here are my most recent positions.
+    </p>
+  </div>
+  <div class="flex flex-col gap-y-4">
+    {career.map((position) => <CareerCard position={position} />)}
+  </div>
+  <div class="flex justify-center" aria-label="see full timeline">
+    <Link
+      href="/career"
+      class={buttonVariants({ variant: 'ghost' }) + ' group'}
+    >
+      See full timeline <span
+        class="ml-1.5 transition-transform group-hover:translate-x-1"
+        >&rarr;</span
+      >
+    </Link>
+  </div>
+</section>

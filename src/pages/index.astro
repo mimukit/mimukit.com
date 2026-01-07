@@ -1,13 +1,10 @@
 ---
-import CareerCard from '@/components/CareerCard.astro';
-import Link from '@/components/Link.astro';
+import CareerSection from '@/components/home/CareerSection.astro';
+import Hero from '@/components/home/Hero.astro';
+import LatestPostsSection from '@/components/home/LatestPostsSection.astro';
+import ProjectsSection from '@/components/home/ProjectsSection.astro';
+import SkillsSection from '@/components/home/SkillsSection.astro';
 import PageHead from '@/components/PageHead.astro';
-import ProjectCard from '@/components/ProjectCard.astro';
-import BlogCard from '@/components/react/blog-card';
-import Skills from '@/components/react/skills';
-import { buttonVariants } from '@/components/ui/button';
-import Logo from '@/components/ui/logo';
-import { SITE } from '@/consts';
 import { CAREER_DATA } from '@/data/career';
 import Layout from '@/layouts/Layout.astro';
 import { getRecentPosts, getTopProjects } from '@/lib/data-utils';
@@ -20,176 +17,13 @@ const currentUrl = Astro.url;
 
 <Layout canonicalUrl={currentUrl}>
   <PageHead slot="head" title="Senior Software Engineer" />
-  <section class="flex flex-col gap-y-12 px-4 py-8 sm:px-8 lg:px-16">
-    <div
-      class="flex flex-col items-center text-center sm:flex-row sm:items-start sm:gap-8 sm:text-left"
-    >
-      <div class="mt-8 sm:mt-0 sm:max-w-xl">
-        <h1
-          class="font-custom text-foreground text-start text-4xl font-extrabold sm:text-5xl"
-        >
-          {SITE.title}
-        </h1>
-        <div class="mt-4 flex items-center gap-2" aria-label="location">
-          <span class="text-foreground text-sm font-medium"> I'm from </span>
-          <span class="flex items-center gap-1">
-            <span
-              class="bg-primary text-primary-foreground ring-primary/30 rounded-full px-3 py-1 text-sm font-medium ring-1"
-            >
-              {SITE.location}
-            </span>
-          </span>
-        </div>
-        <p
-          class="text-md text-foreground mt-4 text-start font-sans"
-          title="description"
-          aria-label="description"
-        >
-          {SITE.description}
-        </p>
-      </div>
+  <Hero />
 
-      <div
-        class="relative my-8 overflow-hidden rounded-lg sm:my-0 sm:shrink-0 sm:overflow-hidden sm:rounded-lg"
-      >
-        <Logo className="h-auto w-40 object-cover sm:w-48 md:w-56 lg:w-64" />
-      </div>
-    </div>
+  <SkillsSection />
 
-    <section class="relative" aria-labelledby="skills-title">
-      <h2
-        id="skills-title"
-        class="font-custom text-foreground text-2xl font-bold"
-        title="skills"
-        aria-label="skills"
-        role="heading"
-      >
-        Skills & Technologies
-      </h2>
-      <p class="text-muted-foreground text-sm" aria-label="skills description">
-        Below is a selection of technologies with which I have significant
-        professional experience:
-      </p>
-      <div>
-        <Skills client:load />
-      </div>
-    </section>
+  <CareerSection career={recentCareer} />
 
-    <section
-      class="flex flex-col gap-y-4"
-      aria-labelledby="career-title"
-      role="region"
-    >
-      <div class="relative" aria-labelledby="career-title">
-        <h2
-          id="career-title"
-          class="font-custom text-foreground text-2xl font-bold"
-          title="career"
-          aria-label="career"
-        >
-          Career
-        </h2>
-        <p
-          class="text-muted-foreground text-sm"
-          aria-label="career description"
-        >
-          A glimpse of my professional journey. Here are my most recent
-          positions.
-        </p>
-      </div>
-      <div class="flex flex-col gap-y-4">
-        {recentCareer.map((position) => <CareerCard position={position} />)}
-      </div>
-      <div class="flex justify-center" aria-label="see full timeline">
-        <Link
-          href="/career"
-          class={buttonVariants({ variant: 'ghost' }) + ' group'}
-        >
-          See full timeline <span
-            class="ml-1.5 transition-transform group-hover:translate-x-1"
-            >&rarr;</span
-          >
-        </Link>
-      </div>
-    </section>
+  <ProjectsSection projects={projects} />
 
-    <section
-      class="flex flex-col gap-y-4"
-      aria-labelledby="projects-title"
-      role="region"
-    >
-      <div class="relative" aria-labelledby="projects-title">
-        <h2
-          id="projects-title"
-          class="font-custom text-foreground text-2xl font-bold"
-          title="projects"
-          aria-label="projects"
-        >
-          Projects
-        </h2>
-        <p
-          class="text-muted-foreground text-sm"
-          aria-label="projects description"
-        >
-          Here are some of my recent projects. You can find more on my projects
-          page.
-        </p>
-      </div>
-      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-        {projects.map((project) => <ProjectCard project={project} />)}
-      </div>
-      <div class="flex justify-center" aria-label="see all projects">
-        <Link
-          href="/projects"
-          class={buttonVariants({ variant: 'ghost' }) + ' group'}
-        >
-          See all projects <span
-            class="ml-1.5 transition-transform group-hover:translate-x-1"
-            >&rarr;</span
-          >
-        </Link>
-      </div>
-    </section>
-
-    <section
-      class="flex flex-col gap-y-4"
-      aria-labelledby="latest-posts-title"
-      role="region"
-    >
-      <div class="relative" aria-labelledby="latest-posts-title">
-        <h2
-          id="latest-posts-title"
-          class="font-custom text-foreground text-2xl font-bold"
-          title="latest blog posts"
-          aria-label="latest blog posts"
-        >
-          Latest Blog Posts
-        </h2>
-        <p class="text-muted-foreground text-sm" aria-label="blog description">
-          Here are some of my latest blog posts. You can find more on my blog
-          page.
-        </p>
-      </div>
-      <ul class="flex flex-col gap-y-4">
-        {
-          blog.map((post) => (
-            <li>
-              <BlogCard entry={post} />
-            </li>
-          ))
-        }
-      </ul>
-      <div class="flex justify-center" aria-label="see all posts">
-        <Link
-          href="/blog"
-          class={buttonVariants({ variant: 'ghost' }) + ' group'}
-        >
-          See all posts <span
-            class="ml-1.5 transition-transform group-hover:translate-x-1"
-            >&rarr;</span
-          >
-        </Link>
-      </div>
-    </section>
-  </section>
+  <LatestPostsSection posts={blog} />
 </Layout>

@@ -1,0 +1,49 @@
+---
+import Link from '@/components/Link.astro';
+import BlogCard from '@/components/react/blog-card';
+import { buttonVariants } from '@/components/ui/button';
+import type { getRecentPosts } from '@/lib/data-utils';
+
+interface Props {
+  posts: Awaited<ReturnType<typeof getRecentPosts>>;
+}
+
+const { posts } = Astro.props;
+---
+
+<section
+  class="flex flex-col gap-y-4 px-4 sm:px-8 lg:px-16"
+  aria-labelledby="latest-posts-title"
+  role="region"
+>
+  <div class="relative" aria-labelledby="latest-posts-title">
+    <h2
+      id="latest-posts-title"
+      class="font-custom text-foreground text-2xl font-bold"
+      title="latest blog posts"
+      aria-label="latest blog posts"
+    >
+      Latest Blog Posts
+    </h2>
+    <p class="text-muted-foreground text-sm" aria-label="blog description">
+      Here are some of my latest blog posts. You can find more on my blog page.
+    </p>
+  </div>
+  <ul class="flex flex-col gap-y-4">
+    {
+      posts.map((post) => (
+        <li>
+          <BlogCard entry={post} />
+        </li>
+      ))
+    }
+  </ul>
+  <div class="flex justify-center" aria-label="see all posts">
+    <Link href="/blog" class={buttonVariants({ variant: 'ghost' }) + ' group'}>
+      See all posts <span
+        class="ml-1.5 transition-transform group-hover:translate-x-1"
+        >&rarr;</span
+      >
+    </Link>
+  </div>
+</section>
