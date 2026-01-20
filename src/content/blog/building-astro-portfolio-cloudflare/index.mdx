@@ -1,0 +1,467 @@
+---
+title: 'Building an Astro Portfolio with Cloudflare Pages: A Step-by-Step Guide'
+description: 'Learn how to build a modern, performant portfolio website using Astro 5, React 19, and Cloudflare Pages. This comprehensive guide covers SSR configuration, content management, dynamic features, and deployment optimization.'
+date: 2025-01-15
+updatedDate: 2025-01-15
+tags:
+  - astro
+  - cloudflare
+  - portfolio
+  - tutorial
+  - react
+  - tailwindcss
+  - ssr
+  - performance
+authors:
+  - 'Mukitul Islam Mukit'
+---
+
+# Building an Astro Portfolio with Cloudflare Pages: A Step-by-Step Guide
+
+As a senior software engineer with over 7 years of experience building scalable web applications, I've seen countless portfolio websites. Most follow similar patterns—static sites with basic HTML/CSS, or heavy JavaScript frameworks that sacrifice performance for features. When I decided to rebuild my portfolio, I wanted something that combined the best of both worlds: modern development experience, excellent performance, and easy deployment.
+
+This guide walks through building exactly that—a sophisticated portfolio using Astro 5, React 19, and Cloudflare Pages. We'll cover everything from project setup to deployment optimization, including hybrid SSR, content management, and performance best practices.
+
+## Why Astro and Cloudflare Pages?
+
+Before diving into code, let's understand the architectural decisions:
+
+**Astro's advantages:**
+
+- **Islands Architecture**: Only hydrate interactive components, keeping initial page loads fast
+- **Content Collections**: Type-safe content management for blogs and projects
+- **Flexible Rendering**: Mix static generation, server-side rendering, and client-side hydration
+- **Modern Tooling**: Built on Vite with excellent developer experience
+
+**Cloudflare Pages benefits:**
+
+- **Edge Computing**: Global CDN with instant deployments
+- **Functions**: Serverless functions at the edge for dynamic features
+- **Performance**: Automatic optimizations and caching
+- **Cost-Effective**: Generous free tier for personal projects
+
+## Prerequisites
+
+- Node.js 20.0.0 or later
+- pnpm (recommended) or npm
+- Basic knowledge of React and TypeScript
+- A Cloudflare account (free tier works fine)
+
+## Project Setup
+
+Let's start by creating a new Astro project:
+
+```bash
+pnpm create astro@latest mimukit-portfolio --template minimal --install --no-git --yes
+cd mimukit-portfolio
+```
+
+This gives us a clean Astro project. Now let's add the essential integrations:
+
+```bash
+pnpm add @astrojs/mdx @astrojs/react @astrojs/cloudflare astro-icon @astrojs/markdown-remark
+pnpm add @types/react @types/react-dom typescript
+pnpm add tailwindcss @tailwindcss/vite astro-expressive-code
+pnpm add react react-dom
+```
+
+## Core Configuration
+
+### Astro Configuration
+
+The heart of our setup is `astro.config.ts`. Here's the complete configuration:
+
+```typescript
+import { defineConfig } from 'astro/config';
+import mdx from '@astrojs/mdx';
+import react from '@astrojs/react';
+import icon from 'astro-icon';
+import expressiveCode from 'astro-expressive-code';
+import tailwindcss from '@tailwindcss/vite';
+import cloudflare from '@astrojs/cloudflare';
+
+export default defineConfig({
+  site: 'https://yourdomain.com', // Replace with your actual domain
+
+  integrations: [
+    expressiveCode({
+      themes: ['catppuccin-latte', 'ayu-dark'],
+      plugins: [pluginCollapsibleSections(), pluginLineNumbers()],
+      useDarkModeMediaQuery: true,
+      defaultProps: {
+        wrap: true,
+        collapseStyle: 'collapsible-auto',
+      },
+    }),
+    mdx(),
+    react(),
+    icon(),
+  ],
+
+  vite: {
+    plugins: [tailwindcss()],
+    optimizeDeps: {
+      include: ['react', 'react-dom', 'clsx', 'tailwind-merge'],
+    },
+    ssr: {
+      external: ['@resvg/resvg-js'],
+    },
+  },
+
+  adapter: cloudflare({
+    imageService: 'compile',
+  }),
+});
+```
+
+Key points:
+
+- **Cloudflare Adapter**: Enables SSR and edge functions
+- **Expressive Code**: Beautiful syntax highlighting with themes
+- **Tailwind CSS 4**: Modern styling with Vite integration
+- **Icon System**: Optimized icon loading via astro-icon
+
+### Content Collections
+
+Astro's content collections provide type-safe content management. Create `src/content.config.ts`:
+
+```typescript
+import { glob } from 'astro/loaders';
+import { defineCollection, z } from 'astro:content';
+
+const blog = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/blog' }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string(),
+      description: z.string(),
+      date: z.coerce.date(),
+      image: image().optional(),
+      tags: z.array(z.string()).optional(),
+      authors: z.array(z.string()).optional(),
+      draft: z.boolean().optional(),
+    }),
+});
+
+const projects = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/projects' }),
+  schema: ({ image }) =>
+    z.object({
+      name: z.string(),
+      description: z.string(),
+      tags: z.array(z.string()),
+      image: image(),
+      link: z.string().url(),
+      startDate: z.coerce.date().optional(),
+      endDate: z.coerce.date().optional(),
+      rank: z.number(),
+    }),
+});
+
+export const collections = { blog, projects };
+```
+
+This setup gives us:
+
+- **Type Safety**: Full TypeScript support for content
+- **Validation**: Zod schemas ensure data consistency
+- **Auto-loading**: Content automatically discovered and processed
+
+## Building the Portfolio Structure
+
+### Layout System
+
+Create a base layout that handles themes, fonts, and common structure:
+
+```astro
+---
+// src/layouts/Layout.astro
+import Footer from '@/components/Footer.astro';
+import Head from '@/components/Head.astro';
+import Navbar from '@/components/react/navbar';
+import '@/styles/global.css';
+
+const { title, description, image } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <Head title={title} description={description} image={image} />
+  <body>
+    <Navbar client:load />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
+```
+
+### Interactive Components with React
+
+The navbar uses React for interactivity while keeping the rest static:
+
+```tsx
+// src/components/react/navbar.tsx
+import { useState } from 'react';
+
+export default function Navbar() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <nav className="bg-background/80 fixed top-0 z-50 w-full backdrop-blur-md">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 justify-between">
+          <div className="flex items-center">
+            <Link href="/" className="text-xl font-bold">
+              Your Name
+            </Link>
+          </div>
+
+          <div className="hidden items-center space-x-8 md:flex">
+            <NavLink href="/">Home</NavLink>
+            <NavLink href="/blog">Blog</NavLink>
+            <NavLink href="/projects">Projects</NavLink>
+            <ThemeToggle />
+          </div>
+
+          <MobileMenuButton
+            isOpen={isOpen}
+            onClick={() => setIsOpen(!isOpen)}
+          />
+        </div>
+      </div>
+    </nav>
+  );
+}
+```
+
+## Content Management
+
+### Blog Posts
+
+Create blog posts using MDX for rich content:
+
+````mdx
+---
+title: 'Hello World'
+description: 'My first blog post'
+date: 2025-01-15
+tags: ['greeting', 'portfolio']
+---
+
+# Hello World
+
+Welcome to my portfolio blog!
+
+## Features
+
+- **TypeScript**: Full type safety
+- **MDX**: Rich content with components
+- **Syntax Highlighting**: Beautiful code blocks
+
+```typescript
+const greeting = 'Hello, World!';
+console.log(greeting);
+```
+````
+
+````
+
+### Project Showcases
+
+Projects use frontmatter for structured data:
+
+```mdx
+---
+name: 'My Awesome Project'
+description: 'A fullstack application built with modern tools'
+tags: ['react', 'nodejs', 'typescript', 'postgresql']
+image: '../../assets/projects/project-image.png'
+link: 'https://github.com/username/project'
+startDate: '2024-01-01'
+rank: 1
+---
+
+# My Awesome Project
+
+## Overview
+
+This project demonstrates modern web development practices...
+
+## Tech Stack
+
+- React 19 for the frontend
+- Node.js with Express for APIs
+- PostgreSQL for data persistence
+- TypeScript throughout
+````
+
+## Advanced Features
+
+### Dynamic OG Images
+
+Generate social cards dynamically using Satori:
+
+```typescript
+// src/pages/image/[...id].png.ts
+import satori from 'satori';
+import { html } from 'satori-html';
+import { Resvg } from '@resvg/resvg-js';
+import { getCollection } from 'astro:content';
+
+export async function GET(context: APIContext) {
+  const { title, description, tags } = context.props as Props;
+
+  const markup = html(`<div>...social card markup...</div>`);
+
+  const svg = await satori(markup, {
+    fonts: [
+      /* font definitions */
+    ],
+    width: 1200,
+    height: 630,
+  });
+
+  const image = new Resvg(svg).render();
+  const pngData = image.asPng();
+
+  return new Response(pngData, {
+    headers: {
+      'Content-Type': 'image/png',
+      'Cache-Control': 'public, max-age=31536000, immutable',
+    },
+  });
+}
+```
+
+### Database Integration
+
+Add interactive features with a database backend:
+
+```typescript
+// src/pages/api/like/[postId].ts
+import { sql } from '@/lib/neon';
+
+export const POST: APIRoute = async ({ params, request }) => {
+  const { postId } = params;
+
+  // Rate limiting and validation logic
+  // Database operations for likes/dislikes
+
+  return new Response(JSON.stringify({ success: true, data: result }), {
+    headers: { 'Content-Type': 'application/json' },
+  });
+};
+```
+
+## Deployment to Cloudflare Pages
+
+### Build Configuration
+
+Create `wrangler.toml` for Cloudflare deployment:
+
+```toml
+name = "mimukit-portfolio"
+compatibility_date = "2024-01-01"
+
+[build]
+command = "pnpm build"
+
+[build.upload]
+format = "service-worker"
+
+[[build.upload.rules]]
+type = "ESModule"
+globs = ["**/*.js"]
+
+[[build.upload.rules]]
+type = "CommonJS"
+globs = ["**/*.cjs"]
+
+[[build.upload.rules]]
+type = "CompiledWasm"
+globs = ["**/*.wasm"]
+```
+
+### Environment Variables
+
+Set up environment variables in Cloudflare:
+
+- `DATABASE_URL`: Neon PostgreSQL connection string
+- `NODE_ENV`: production
+- Custom domain and other configuration
+
+### Deployment Steps
+
+1. Connect your GitHub repository to Cloudflare Pages
+2. Configure build settings (build command: `pnpm build`, output directory: `dist`)
+3. Add environment variables
+4. Deploy!
+
+## Performance Optimization
+
+### Build Optimizations
+
+- **Image Optimization**: Astro's built-in image service
+- **Font Loading**: Preload critical fonts
+- **Bundle Analysis**: Use `pnpm build --analyze` to identify large chunks
+
+### Runtime Performance
+
+- **Edge Caching**: Leverage Cloudflare's global CDN
+- **Lazy Loading**: Images and components
+- **Service Worker**: Cache static assets
+- **Database Optimization**: Connection pooling with Neon
+
+### Monitoring
+
+Track performance with:
+
+- **Lighthouse**: Automated audits
+- **Core Web Vitals**: Real user metrics
+- **Cloudflare Analytics**: Request patterns and performance
+
+## Common Challenges and Solutions
+
+### Build Issues
+
+- **Large Bundles**: Code splitting and lazy loading
+- **Type Errors**: Strict TypeScript configuration
+- **Asset Optimization**: Proper image formats and compression
+
+### Deployment Problems
+
+- **Environment Variables**: Secure storage in Cloudflare
+- **Domain Configuration**: DNS setup and SSL
+- **Function Limits**: Optimize serverless function usage
+
+### Performance Bottlenecks
+
+- **Database Queries**: Indexing and query optimization
+- **Image Loading**: WebP format and responsive images
+- **JavaScript Execution**: Minimize client-side code
+
+## Lessons Learned
+
+After building and deploying this portfolio, here are key takeaways:
+
+1. **Start Simple**: Begin with static content, add dynamic features gradually
+2. **Performance First**: Measure and optimize from day one
+3. **Content Management**: Plan your content structure early
+4. **Edge Benefits**: Cloudflare's global network significantly improves load times
+5. **Developer Experience**: Astro's developer tools make complex projects manageable
+
+## Conclusion
+
+Building a portfolio with Astro and Cloudflare Pages combines modern development practices with exceptional performance. The hybrid approach allows static content to load instantly while keeping interactive features snappy.
+
+This setup scales from personal portfolios to complex content sites. The edge-first architecture ensures fast loading worldwide, and the developer experience keeps you productive.
+
+Ready to build your own? Start with `pnpm create astro@latest` and explore the [Astro documentation](https://docs.astro.build) for more advanced patterns.
+
+Have questions or want to share your implementation? Find me on [GitHub](https://github.com/mimukit) or [LinkedIn](https://linkedin.com/in/mimukit).
+
+---
+
+_This portfolio is open source on [GitHub](https://github.com/mimukit/mimukit.com). Feel free to fork and adapt it for your own use!_
