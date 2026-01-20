@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useRef, useEffect, useState } from 'react';
-import { motion, useAnimationControls } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 interface InfiniteScrollProps {
@@ -27,9 +26,6 @@ export function InfiniteScroll({
   const [isPaused, setIsPaused] = useState(false);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const controls = useAnimationControls();
-  const elapsedTimeRef = useRef(0);
-  const lastTimeRef = useRef(0);
 
   useEffect(() => {
     const content = contentRef.current;
@@ -38,57 +34,29 @@ export function InfiniteScroll({
     const updateWidth = () => {
       const width = content.offsetWidth;
       setContentWidth(width);
+      if (scrollerRef.current) {
+        scrollerRef.current.style.setProperty('--scroll-distance', direction === 'normal' ? `-${width}px` : '0');
+      }
     };
 
     updateWidth();
     window.addEventListener('resize', updateWidth);
     return () => window.removeEventListener('resize', updateWidth);
-  }, [children]);
+  }, [children, direction]);
 
   useEffect(() => {
-    if (!contentWidth) return;
-
-    const startX = direction === 'normal' ? 0 : -contentWidth;
-    const endX = direction === 'normal' ? -contentWidth : 0;
-
-    if (!isPaused) {
-      const remainingDuration = duration - elapsedTimeRef.current;
-      const progress = elapsedTimeRef.current / duration;
-      const currentX =
-        direction === 'normal'
-          ? startX + (endX - startX) * progress
-          : endX + (startX - endX) * (1 - progress);
-
-      controls.set({ x: currentX });
-      controls.start({
-        x: endX,
-        transition: {
-          duration: remainingDuration / 1000,
-          ease: 'linear',
-          repeat: Infinity,
-          repeatType: 'loop',
-          repeatDelay: 0,
-        },
-      });
-
-      lastTimeRef.current = Date.now();
+    if (scrollerRef.current) {
+      scrollerRef.current.style.setProperty('--scroll-duration', `${duration}ms`);
     }
-  }, [controls, direction, duration, contentWidth, isPaused]);
+  }, [duration]);
 
   const handleMouseEnter = () => {
     if (!pauseOnHover) return;
-
-    const currentTime = Date.now();
-    const deltaTime = currentTime - lastTimeRef.current;
-    elapsedTimeRef.current = (elapsedTimeRef.current + deltaTime) % duration;
-
     setIsPaused(true);
-    controls.stop();
   };
 
   const handleMouseLeave = () => {
     if (!pauseOnHover) return;
-    lastTimeRef.current = Date.now();
     setIsPaused(false);
   };
 
@@ -101,18 +69,20 @@ export function InfiniteScroll({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="flex">
-        <motion.div
+      <div className="flex overflow-hidden">
+        <div
           ref={scrollerRef}
-          className="flex shrink-0"
-          animate={controls}
+          className={cn('flex shrink-0 infinite-scroll-track', isPaused && 'paused')}
+          style={{
+            '--scroll-distance': direction === 'normal' ? `-${contentWidth}px` : '0',
+          } as React.CSSProperties}
         >
           <div ref={contentRef} className="flex shrink-0">
             {children}
           </div>
           <div className="flex shrink-0">{children}</div>
           <div className="flex shrink-0">{children}</div>
-        </motion.div>
+        </div>
       </div>
       {showFade && (
         <div
