@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import Link from './link';
 import ThemeToggle from './theme-toggle';
 import { NAV_LINKS, SITE } from '../../consts';
@@ -15,6 +14,7 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isExiting, setIsExiting] = useState(false);
   const [activePath, setActivePath] = useState('/');
 
   useEffect(() => {
@@ -80,6 +80,14 @@ const Navbar = () => {
     };
   }, [mobileMenuOpen]);
 
+  const handleCloseMenu = () => {
+    setIsExiting(true);
+    setTimeout(() => {
+      setMobileMenuOpen(false);
+      setIsExiting(false);
+    }, 300); // Match CSS animation duration
+  };
+
   const sizeVariants: Record<number, { width: string }> = {
     0: { width: '100%' },
     1: { width: '90%' },
@@ -90,16 +98,16 @@ const Navbar = () => {
 
   return (
     <>
-      <motion.header
+      <header
         aria-label="Navigation"
         role="banner"
-        layout={!isMobile}
-        initial={sizeVariants[0]}
-        animate={isMobile ? sizeVariants[0] : sizeVariants[scrollLevel]}
+        style={{
+          width: isMobile ? sizeVariants[0].width : sizeVariants[scrollLevel].width
+        }}
         className={cn(
-          'fixed left-1/2 z-30 -translate-x-1/2 transform backdrop-blur-lg',
+          'fixed left-1/2 z-30 -translate-x-1/2 transform backdrop-blur-lg navbar-transition',
           'bg-background/80 border-0',
-          'rounded-none shadow-none transition-all duration-300 ease-in-out',
+          'rounded-none shadow-none',
           'w-full border border-transparent',
           isScrolled && !isMobile && 'rounded-full',
           isScrolled && !isMobile && 'backdrop-blur-md',
@@ -141,10 +149,9 @@ const Navbar = () => {
                 const isActive =
                   activePath.startsWith(item.href) && item.href !== '/';
                 return (
-                  <motion.div
+                  <div
                     key={item.href}
-                    whileHover={{ scale: 1.05 }}
-                    className="relative"
+                    className="relative nav-item-hover transition-transform duration-200"
                   >
                     <Link
                       href={item.href}
@@ -161,7 +168,7 @@ const Navbar = () => {
                     >
                       {item.label}
                     </Link>
-                  </motion.div>
+                  </div>
                 );
               })}
             </nav>
@@ -172,7 +179,7 @@ const Navbar = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                onClick={() => mobileMenuOpen ? handleCloseMenu() : setMobileMenuOpen(true)}
                 aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
                 className={
                   'ml-1 h-9 w-9 rounded-full p-0 transition-colors duration-200 ease-in-out'
@@ -187,73 +194,70 @@ const Navbar = () => {
             )}
           </div>
         </div>
-      </motion.header>
+      </header>
 
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            key="mobile-menu"
-            initial="closed"
-            animate="open"
-            exit="closed"
-            className="bg-background fixed inset-0 z-20 flex flex-col items-center justify-start border-0 shadow-none"
-          >
-            <div className="flex h-full w-full flex-col items-center justify-start p-6 pt-24">
-              <nav className="flex w-full flex-col items-center justify-start gap-1">
-                {NAV_LINKS.map((item, i) => (
-                  <motion.div
-                    key={item.href}
-                    custom={i}
-                    className="w-full text-start"
+      {mobileMenuOpen && (
+        <div
+          className={cn(
+            "bg-background fixed inset-0 z-20 flex flex-col items-center justify-start border-0 shadow-none",
+            isExiting ? "mobile-menu-exit" : "mobile-menu-enter"
+          )}
+        >
+          <div className="flex h-full w-full flex-col items-center justify-start p-6 pt-24">
+            <nav className="flex w-full flex-col items-center justify-start gap-1">
+              {NAV_LINKS.map((item, i) => (
+                <div
+                  key={item.href}
+                  className="w-full text-start mobile-menu-item"
+                  style={{ animationDelay: `${i * 0.05}s` }}
+                >
+                  <Link
+                    href={item.href}
+                    onClick={handleCloseMenu}
+                    className="font-custom group relative inline-block py-2 text-lg font-bold capitalize transition-colors dark:text-white dark:hover:text-white/80"
                   >
-                    <Link
-                      href={item.href}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="font-custom group relative inline-block py-2 text-lg font-bold capitalize transition-colors dark:text-white dark:hover:text-white/80"
-                    >
-                      {item.label}
-                      <span className="absolute bottom-0 left-0 h-0.5 w-0 bg-neutral-900 transition-all duration-300 ease-in-out group-hover:w-full dark:bg-white"></span>
-                    </Link>
-                  </motion.div>
-                ))}
-              </nav>
-
-              <motion.div
-                custom={NAV_LINKS.length + 1}
-                className="mt-auto flex flex-col items-center gap-6"
-              >
-                <div className="flex flex-wrap items-center justify-center gap-x-2 text-center">
-                  <span
-                    className="text-muted-foreground text-sm"
-                    aria-label="copyright"
-                  >
-                    2020 - {new Date().getFullYear()} &copy; All rights
-                    reserved.
-                  </span>
-                  <Separator
-                    orientation="vertical"
-                    className="hidden h-4! sm:block"
-                  />
-                  <p
-                    className="text-muted-foreground text-sm"
-                    aria-label="open-source description"
-                  >
-                    <Link
-                      href="https://github.com/mimukit/mimukit.com"
-                      class="text-foreground"
-                      external
-                      underline
-                    >
-                      Open-source
-                    </Link>{' '}
-                    under MIT license
-                  </p>
+                    {item.label}
+                    <span className="absolute bottom-0 left-0 h-0.5 w-0 bg-neutral-900 transition-all duration-300 ease-in-out group-hover:w-full dark:bg-white"></span>
+                  </Link>
                 </div>
-              </motion.div>
+              ))}
+            </nav>
+
+            <div
+              className="mt-auto flex flex-col items-center gap-6 mobile-menu-item"
+              style={{ animationDelay: `${(NAV_LINKS.length + 1) * 0.05}s` }}
+            >
+              <div className="flex flex-wrap items-center justify-center gap-x-2 text-center">
+                <span
+                  className="text-muted-foreground text-sm"
+                  aria-label="copyright"
+                >
+                  2020 - {new Date().getFullYear()} &copy; All rights
+                  reserved.
+                </span>
+                <Separator
+                  orientation="vertical"
+                  className="hidden h-4! sm:block"
+                />
+                <p
+                  className="text-muted-foreground text-sm"
+                  aria-label="open-source description"
+                >
+                  <Link
+                    href="https://github.com/mimukit/mimukit.com"
+                    class="text-foreground"
+                    external
+                    underline
+                  >
+                    Open-source
+                  </Link>{' '}
+                  under MIT license
+                </p>
+              </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </div>
+      )}
     </>
   );
 };
