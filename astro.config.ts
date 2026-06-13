@@ -87,7 +87,6 @@ export default defineConfig({
         'react',
         'react-dom',
         'clsx',
-        'framer-motion',
         'lucide-react',
         'lodash.debounce',
         '@radix-ui/react-icons',
