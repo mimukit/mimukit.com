@@ -1,6 +1,7 @@
 ---
 import Breadcrumbs from '@/components/Breadcrumbs.astro';
 import CareerCard from '@/components/CareerCard.astro';
+import Link from '@/components/Link.astro';
 import PageHead from '@/components/PageHead.astro';
 import { CAREER_DATA, CAREER_START_YEAR } from '@/data/career';
 import Layout from '@/layouts/Layout.astro';
@@ -26,6 +27,16 @@ const EXPERIENCE_YEARS = new Date().getFullYear() - CAREER_START_YEAR;
         Overall I have <span class="text-foreground font-semibold"
           >{EXPERIENCE_YEARS}+ years of experience</span
         > in software engineering.
+      </p>
+      <p class="text-muted-foreground mt-2 text-xs">
+        For the full timeline and details, check out my <Link
+          href="https://www.linkedin.com/in/mimukit/"
+          external
+          underline
+          class="text-foreground font-semibold"
+        >
+          LinkedIn profile
+        </Link>.
       </p>
     </div>
 
