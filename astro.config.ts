@@ -58,6 +58,13 @@ function rehypeDemoteH1AndStripTitle() {
 export default defineConfig({
   site: 'https://mimukit.com',
 
+  // Sessions are unused. Set an explicit in-memory driver so the Cloudflare
+  // adapter does not auto-enable KV-backed sessions and require a `SESSION`
+  // binding (which would throw `Invalid binding SESSION` at runtime).
+  session: {
+    driver: 'memory',
+  },
+
   integrations: [
     expressiveCode({
       themes: ['catppuccin-latte', 'ayu-dark'],
