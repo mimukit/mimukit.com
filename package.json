@@ -30,6 +30,8 @@
     "preview": "astro preview",
     "preview:cloudflare": "wrangler dev",
     "astro": "astro",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "prettier": "prettier --write **/*.{ts,tsx,css,astro} --ignore-path .gitignore",
     "clean": "rimraf .astro .wrangler dist node_modules pnpm-lock.yaml"
   },
@@ -87,7 +89,8 @@
     "prettier-plugin-astro-organize-imports": "^0.4.11",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "rimraf": "^6.1.2",
-    "sharp": "^0.34.5"
+    "sharp": "^0.34.5",
+    "vitest": "^4.1.8"
   },
   "prettier": {
     "semi": true,
