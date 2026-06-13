@@ -22,7 +22,7 @@
   "homepage": "https://mimukit.com",
   "type": "module",
   "version": "1.0.0",
-  "packageManager": "pnpm@10.27.0",
+  "packageManager": "pnpm@11.5.3",
   "scripts": {
     "dev": "astro dev",
     "start": "astro preview",
