@@ -25,10 +25,9 @@ export async function getStaticPaths() {
 }
 
 const { tag, posts } = Astro.props;
-const currentUrl = Astro.url;
 ---
 
-<Layout canonicalUrl={currentUrl}>
+<Layout>
   <PageHead
     slot="head"
     title={`Posts tagged with "${tag}"`}

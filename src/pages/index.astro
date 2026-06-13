@@ -5,6 +5,7 @@ import LatestPostsSection from '@/components/home/LatestPostsSection.astro';
 import ProjectsSection from '@/components/home/ProjectsSection.astro';
 import SkillsSection from '@/components/home/SkillsSection.astro';
 import PageHead from '@/components/PageHead.astro';
+import PersonSchema from '@/components/PersonSchema.astro';
 import { CAREER_DATA } from '@/data/career';
 import Layout from '@/layouts/Layout.astro';
 import { getRecentPosts, getTopProjects } from '@/lib/data-utils';
@@ -12,11 +13,11 @@ import { getRecentPosts, getTopProjects } from '@/lib/data-utils';
 const blog = await getRecentPosts(3);
 const projects = await getTopProjects(4);
 const recentCareer = CAREER_DATA.slice(0, 2);
-const currentUrl = Astro.url;
 ---
 
-<Layout canonicalUrl={currentUrl}>
+<Layout>
   <PageHead slot="head" title="Senior Software Engineer" />
+  <PersonSchema slot="head" />
   <Hero />
   <CareerSection career={recentCareer} />
   <ProjectsSection projects={projects} />

@@ -3,6 +3,7 @@ import Breadcrumbs from '@/components/Breadcrumbs.astro';
 import PageHead from '@/components/PageHead.astro';
 import ProjectCard from '@/components/ProjectCard.astro';
 import PaginationComponent from '@/components/ui/pagination';
+import { SITE } from '@/consts';
 import Layout from '@/layouts/Layout.astro';
 import { getAllProjects } from '@/lib/data-utils';
 import type { PaginateFunction } from 'astro';
@@ -19,11 +20,34 @@ export async function getStaticPaths({
 
 const { page } = Astro.props;
 const projectData = await getAllProjects();
-const currentUrl = Astro.url;
+
+const projectsSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  '@id': `${SITE.href}/projects#collection`,
+  name: `Projects | ${SITE.title}`,
+  url: `${SITE.href}/projects`,
+  inLanguage: SITE.locale,
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: projectData.map((project, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      url: `${SITE.href}/projects/${project.id}/`,
+      name: project.data.name,
+    })),
+  },
+};
 ---
 
-<Layout canonicalUrl={currentUrl}>
+<Layout>
   <PageHead slot="head" title="Projects" />
+  <script
+    slot="head"
+    type="application/ld+json"
+    is:inline
+    set:html={JSON.stringify(projectsSchema)}
+  />
   <Breadcrumbs
     items={[{ label: 'Projects', href: '/projects', icon: 'lucide:folder' }]}
   />

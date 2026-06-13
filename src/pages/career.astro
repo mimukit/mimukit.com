@@ -6,11 +6,10 @@ import PageHead from '@/components/PageHead.astro';
 import { CAREER_DATA, CAREER_START_YEAR } from '@/data/career';
 import Layout from '@/layouts/Layout.astro';
 
-const currentUrl = Astro.url;
 const EXPERIENCE_YEARS = new Date().getFullYear() - CAREER_START_YEAR;
 ---
 
-<Layout canonicalUrl={currentUrl}>
+<Layout>
   <PageHead
     slot="head"
     title="Career"

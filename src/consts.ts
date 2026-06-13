@@ -10,6 +10,7 @@ export const SITE: Site = {
   locale: 'en-US',
   location: 'Bangladesh',
   email: 'hello@mimukit.com',
+  twitterHandle: '@mimukit',
 };
 
 export const NAV_LINKS: SocialLink[] = [

@@ -8,10 +8,9 @@ import { getSortedTags } from '@/lib/data-utils';
 import { Icon } from 'astro-icon/components';
 
 const sortedTags = await getSortedTags();
-const currentUrl = Astro.url;
 ---
 
-<Layout canonicalUrl={currentUrl}>
+<Layout>
   <PageHead slot="head" title="Tags" />
   <Breadcrumbs items={[{ label: 'Tags', icon: 'lucide:tags' }]} />
 

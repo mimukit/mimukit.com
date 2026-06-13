@@ -3,6 +3,7 @@ import Breadcrumbs from '@/components/Breadcrumbs.astro';
 import PageHead from '@/components/PageHead.astro';
 import TableOfContents from '@/components/TableOfContents.astro';
 import { badgeVariants } from '@/components/ui/badge';
+import { SITE } from '@/consts';
 import Layout from '@/layouts/Layout.astro';
 import { getAllProjects } from '@/lib/data-utils';
 import { Icon } from 'astro-icon/components';
@@ -20,24 +21,31 @@ export async function getStaticPaths() {
 const project = Astro.props;
 const { Content, headings } = await render(project);
 
+const toIso = (date?: Date) => (date ? date.toISOString() : undefined);
 const structuredData = {
   '@context': 'https://schema.org',
-  '@type': 'Projects',
-  headline: project.data.name,
-  datePublished: project.data.startDate || '',
-  dateModified: project.data.endDate || project.data.startDate || '',
+  '@type': 'CreativeWork',
+  name: project.data.name,
+  description: project.data.description || '',
+  url: project.data.link,
+  dateCreated: toIso(project.data.startDate),
+  dateModified: toIso(project.data.endDate || project.data.startDate),
   author: {
     '@type': 'Person',
-    name: 'Author',
+    name: SITE.author,
+    url: SITE.href,
   },
   image: new URL(`/image/${project.id}.png`, Astro.site).toString(),
   keywords: project.data.tags ? project.data.tags.join(', ') : '',
-  description: project.data.description || '',
+  inLanguage: SITE.locale,
+  isPartOf: {
+    '@type': 'CollectionPage',
+    '@id': `${SITE.href}/projects#collection`,
+  },
 };
-const currentUrl = Astro.url;
 ---
 
-<Layout canonicalUrl={currentUrl} isWide={true}>
+<Layout isWide={true}>
   <PageHead slot="head" title={project.data.name} />
   <script
     type="application/ld+json"

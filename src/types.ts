@@ -6,6 +6,7 @@ export type Site = {
   locale: string;
   location: string;
   email: string;
+  twitterHandle: string;
 };
 
 export type SocialLink = {

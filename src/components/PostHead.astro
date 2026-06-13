@@ -73,14 +73,8 @@ const postCanonicalUrl = new URL(
 <meta name="twitter:description" content={optimizedDescription} />
 <meta name="twitter:image" content={image} />
 <meta name="twitter:image:alt" content={title} />
-<meta
-  name="twitter:creator"
-  content={`@${SITE.author.replace(' ', '').toLowerCase()}`}
-/>
-<meta
-  name="twitter:site"
-  content={`@${SITE.author.replace(' ', '').toLowerCase()}`}
-/>
+<meta name="twitter:creator" content={SITE.twitterHandle} />
+<meta name="twitter:site" content={SITE.twitterHandle} />
 
 {
   post?.data.tags &&
@@ -121,7 +115,7 @@ const postCanonicalUrl = new URL(
       },
     },
     datePublished: post.data.date.toISOString(),
-    dateModified: post.data.date.toISOString(),
+    dateModified: (post.data.updatedDate ?? post.data.date).toISOString(),
     mainEntityOfPage: {
       '@type': 'WebPage',
       '@id': postUrl,

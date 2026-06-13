@@ -57,6 +57,13 @@ export const GET: APIRoute = async (context) => {
   });
 
   urls.push({
+    loc: `${baseUrl}/career/`,
+    lastmod: formatDate(now),
+    changefreq: 'monthly',
+    priority: 0.8
+  });
+
+  urls.push({
     loc: `${baseUrl}/tags/`,
     lastmod: formatDate(latestTagsDate),
     changefreq: 'weekly',

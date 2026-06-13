@@ -1,0 +1,38 @@
+---
+import { SITE, SOCIAL_LINKS, technologies } from '@/consts';
+
+const sameAs = [
+  ...SOCIAL_LINKS.filter((link) => link.href.startsWith('https://')).map(
+    (link) => link.href,
+  ),
+  'https://x.com/mimukit',
+];
+
+const knowsAbout = Object.values(technologies).flatMap((category) =>
+  category.map((item) => item.text),
+);
+
+const personSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  '@id': `${SITE.href}#person`,
+  name: SITE.author,
+  url: SITE.href,
+  email: `mailto:${SITE.email}`,
+  jobTitle: 'Senior Software Engineer',
+  description: SITE.description,
+  image: new URL('/logo.png', SITE.href).toString(),
+  address: {
+    '@type': 'PostalAddress',
+    addressCountry: SITE.location,
+  },
+  sameAs,
+  knowsAbout,
+};
+---
+
+<script
+  type="application/ld+json"
+  is:inline
+  set:html={JSON.stringify(personSchema)}
+/>

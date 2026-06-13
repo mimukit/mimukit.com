@@ -7,7 +7,6 @@ Allow: /
 
 # Block access to admin or private directories (if any exist)
 Disallow: /api/
-Disallow: /_astro/
 Disallow: /temp/
 
 # Crawl delay for better server performance

@@ -8,12 +8,13 @@ import { cn } from '@/lib/utils';
 const currentUrl = Astro.url;
 ---
 
-<Layout canonicalUrl={currentUrl}>
+<Layout>
   <PageHead
     slot="head"
     title="404 - Page Not Found"
     description="The page you're looking for couldn't be found. Return to the homepage to explore Mukitul Islam Mukit's latest tech articles, projects, and programming insights."
   />
+  <meta slot="head" name="robots" content="noindex, follow" />
 
   <!-- Add 404 structured data -->
   <script
