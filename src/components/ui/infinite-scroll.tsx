@@ -35,7 +35,10 @@ export function InfiniteScroll({
       const width = content.offsetWidth;
       setContentWidth(width);
       if (scrollerRef.current) {
-        scrollerRef.current.style.setProperty('--scroll-distance', direction === 'normal' ? `-${width}px` : '0');
+        scrollerRef.current.style.setProperty(
+          '--scroll-distance',
+          direction === 'normal' ? `-${width}px` : '0',
+        );
       }
     };
 
@@ -46,7 +49,10 @@ export function InfiniteScroll({
 
   useEffect(() => {
     if (scrollerRef.current) {
-      scrollerRef.current.style.setProperty('--scroll-duration', `${duration}ms`);
+      scrollerRef.current.style.setProperty(
+        '--scroll-duration',
+        `${duration}ms`,
+      );
     }
   }, [duration]);
 
@@ -72,10 +78,16 @@ export function InfiniteScroll({
       <div className="flex overflow-hidden">
         <div
           ref={scrollerRef}
-          className={cn('flex shrink-0 infinite-scroll-track', isPaused && 'paused')}
-          style={{
-            '--scroll-distance': direction === 'normal' ? `-${contentWidth}px` : '0',
-          } as React.CSSProperties}
+          className={cn(
+            'infinite-scroll-track flex shrink-0',
+            isPaused && 'paused',
+          )}
+          style={
+            {
+              '--scroll-distance':
+                direction === 'normal' ? `-${contentWidth}px` : '0',
+            } as React.CSSProperties
+          }
         >
           <div ref={contentRef} className="flex shrink-0">
             {children}

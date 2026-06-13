@@ -102,10 +102,12 @@ const Navbar = () => {
         aria-label="Navigation"
         role="banner"
         style={{
-          width: isMobile ? sizeVariants[0].width : sizeVariants[scrollLevel].width
+          width: isMobile
+            ? sizeVariants[0].width
+            : sizeVariants[scrollLevel].width,
         }}
         className={cn(
-          'fixed left-1/2 z-30 -translate-x-1/2 transform backdrop-blur-lg navbar-transition',
+          'navbar-transition fixed left-1/2 z-30 -translate-x-1/2 transform backdrop-blur-lg',
           'bg-background/80 border-0',
           'rounded-none shadow-none',
           'w-full border border-transparent',
@@ -151,7 +153,7 @@ const Navbar = () => {
                 return (
                   <div
                     key={item.href}
-                    className="relative nav-item-hover transition-transform duration-200"
+                    className="nav-item-hover relative transition-transform duration-200"
                   >
                     <Link
                       href={item.href}
@@ -179,7 +181,9 @@ const Navbar = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => mobileMenuOpen ? handleCloseMenu() : setMobileMenuOpen(true)}
+                onClick={() =>
+                  mobileMenuOpen ? handleCloseMenu() : setMobileMenuOpen(true)
+                }
                 aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
                 className={
                   'ml-1 h-9 w-9 rounded-full p-0 transition-colors duration-200 ease-in-out'
@@ -199,8 +203,8 @@ const Navbar = () => {
       {mobileMenuOpen && (
         <div
           className={cn(
-            "bg-background fixed inset-0 z-20 flex flex-col items-center justify-start border-0 shadow-none",
-            isExiting ? "mobile-menu-exit" : "mobile-menu-enter"
+            'bg-background fixed inset-0 z-20 flex flex-col items-center justify-start border-0 shadow-none',
+            isExiting ? 'mobile-menu-exit' : 'mobile-menu-enter',
           )}
         >
           <div className="flex h-full w-full flex-col items-center justify-start p-6 pt-24">
@@ -208,7 +212,7 @@ const Navbar = () => {
               {NAV_LINKS.map((item, i) => (
                 <div
                   key={item.href}
-                  className="w-full text-start mobile-menu-item"
+                  className="mobile-menu-item w-full text-start"
                   style={{ animationDelay: `${i * 0.05}s` }}
                 >
                   <Link
@@ -224,7 +228,7 @@ const Navbar = () => {
             </nav>
 
             <div
-              className="mt-auto flex flex-col items-center gap-6 mobile-menu-item"
+              className="mobile-menu-item mt-auto flex flex-col items-center gap-6"
               style={{ animationDelay: `${(NAV_LINKS.length + 1) * 0.05}s` }}
             >
               <div className="flex flex-wrap items-center justify-center gap-x-2 text-center">
@@ -232,8 +236,7 @@ const Navbar = () => {
                   className="text-muted-foreground text-sm"
                   aria-label="copyright"
                 >
-                  2020 - {new Date().getFullYear()} &copy; All rights
-                  reserved.
+                  2020 - {new Date().getFullYear()} &copy; All rights reserved.
                 </span>
                 <Separator
                   orientation="vertical"

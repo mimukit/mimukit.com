@@ -251,11 +251,12 @@
 /* Navbar width transitions */
 @layer components {
   .navbar-transition {
-    transition: width 0.3s ease-in-out,
-                border-radius 0.3s ease-in-out,
-                backdrop-filter 0.3s ease-in-out,
-                border 0.3s ease-in-out,
-                max-width 0.3s ease-in-out;
+    transition:
+      width 0.3s ease-in-out,
+      border-radius 0.3s ease-in-out,
+      backdrop-filter 0.3s ease-in-out,
+      border 0.3s ease-in-out,
+      max-width 0.3s ease-in-out;
   }
 
   /* Hover effect for nav items */
