@@ -1,9 +1,17 @@
-import Fuse from 'fuse.js'
-import { useState, useMemo, useCallback } from 'react'
-import { Input } from '@/components/ui/input'
-import BlogCardJSX from './blog-card'
-import debounce from 'lodash.debounce'
-import { cn } from '@/lib/utils'
+import Fuse from 'fuse.js';
+import { useState, useMemo, useCallback } from 'react';
+import { Input } from '@/components/ui/input';
+import BlogCardJSX from './blog-card';
+import debounce from 'lodash.debounce';
+import { cn } from '@/lib/utils';
+import type { CollectionEntry } from 'astro:content';
+
+type SearchEntry = CollectionEntry<'blog'>;
+
+interface SearchProps {
+  searchList: SearchEntry[];
+  initialPosts: SearchEntry[];
+}
 
 const options = {
   keys: ['data.title', 'data.description', 'data.tags'],
@@ -11,12 +19,13 @@ const options = {
   minMatchCharLength: 3,
   threshold: 0.3,
   distance: 100,
-  sortFn: (a, b) => a.score - b.score,
-}
+  sortFn: (a: { score: number }, b: { score: number }) => a.score - b.score,
+};
 
-function Search({ searchList, initialPosts }) {
-  const [query, setQuery] = useState('')
-  const [filteredPosts, setFilteredPosts] = useState(initialPosts)
+function Search({ searchList, initialPosts }: SearchProps) {
+  const [query, setQuery] = useState('');
+  const [filteredPosts, setFilteredPosts] =
+    useState<SearchEntry[]>(initialPosts);
 
   const processedSearchList = useMemo(
     () =>
@@ -32,32 +41,32 @@ function Search({ searchList, initialPosts }) {
         },
       })),
     [searchList],
-  )
+  );
 
   const fuse = useMemo(
-    () => new Fuse(processedSearchList, options),
+    () => new Fuse<SearchEntry>(processedSearchList, options),
     [processedSearchList],
-  )
+  );
 
   const handleOnSearch = useCallback(
-    debounce((searchQuery) => {
+    debounce((searchQuery: string) => {
       if (searchQuery.length > 2) {
         const results = fuse
           .search(searchQuery.toLowerCase())
-          .map((result) => result.item)
-        setFilteredPosts(results)
+          .map((result) => result.item);
+        setFilteredPosts(results);
       } else {
-        setFilteredPosts(initialPosts)
+        setFilteredPosts(initialPosts);
       }
     }, 100),
     [fuse, initialPosts],
-  )
+  );
 
-  const handleInputChange = (event) => {
-    const searchQuery = event.target.value
-    setQuery(searchQuery)
-    handleOnSearch(searchQuery)
-  }
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const searchQuery = event.target.value;
+    setQuery(searchQuery);
+    handleOnSearch(searchQuery);
+  };
 
   return (
     <div>
@@ -82,7 +91,13 @@ function Search({ searchList, initialPosts }) {
       </div>
 
       <hr className="my-6 border-neutral-200 dark:border-neutral-700" />
-      <div className={cn('flex items-center justify-between', 'mb-4', !query && 'hidden')}>
+      <div
+        className={cn(
+          'flex items-center justify-between',
+          'mb-4',
+          !query && 'hidden',
+        )}
+      >
         <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">
           {filteredPosts.length} posts found
         </h2>
@@ -93,8 +108,8 @@ function Search({ searchList, initialPosts }) {
 
       <div className="mt-6">
         <ul className="flex flex-col gap-4">
-          {filteredPosts.slice(0, 50).map((post, index) => (
-            <li key={post.id || post.slug || index}>
+          {filteredPosts.slice(0, 50).map((post) => (
+            <li key={post.id}>
               <BlogCardJSX entry={post} />
             </li>
           ))}
@@ -109,7 +124,7 @@ function Search({ searchList, initialPosts }) {
         )}
       </div>
     </div>
-  )
+  );
 }
 
-export default Search
+export default Search;
